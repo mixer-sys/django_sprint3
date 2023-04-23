@@ -7,10 +7,8 @@ def index(request):
     template = 'blog/index.html'
     posts = Post.objects.select_related(
             'category'
-        ).filter(is_published=True, pub_date__date__lte=datetime.now(),
-                 category__is_published=True).order_by('-pub_date')[:5]
-
-    context = {'post_list': list(reversed(posts))}
+        ).published().filter(pub_date__date__lte=datetime.now())[:5]
+    context = {'post_list': posts}
     return render(request, template, context=context)
 
 
@@ -19,8 +17,7 @@ def post_detail(request, id):
     post = get_object_or_404(
         Post.objects.select_related(
             'category'
-        ).filter(id=id, pub_date__date__lte=datetime.now(),
-                 is_published=True, category__is_published=True)
+        ).published().filter(id=id, pub_date__date__lte=datetime.now())
     )
     return render(request, template, context={'post': post})
 
@@ -34,13 +31,10 @@ def category_posts(request, category_slug):
     post_list = get_list_or_404(
         Post.objects.select_related(
             'category'
-        ).filter(
+        ).published().filter(
             category__slug=category_slug,
-            is_published=True,
-            pub_date__date__lte=datetime.now(),
-            category__is_published=True
+            pub_date__date__lte=datetime.now()
         )
     )
-
     context = {'category': category, 'post_list': post_list}
     return render(request, template, context=context)

@@ -1,7 +1,6 @@
 from django.db import models
 
 
-# Create your models here.
 class PublishedModel(models.Model):
 
     created_at = models.DateTimeField(

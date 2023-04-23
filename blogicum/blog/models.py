@@ -2,6 +2,20 @@ from django.db import models
 from core.models import PublishedModel
 from django.contrib.auth import get_user_model
 
+
+class ActiveModelQuerySet(models.QuerySet):
+
+    def not_published(self, *args, **kwargs):
+        return self.filter(is_published=False,
+                           category__is_published=False,
+                           *args, **kwargs)
+
+    def published(self, *args, **kwargs):
+        return self.filter(is_published=True,
+                           category__is_published=True,
+                           *args, **kwargs)
+
+
 User = get_user_model()
 
 
@@ -22,24 +36,29 @@ class Post(PublishedModel):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name='Автор публикации'
+        verbose_name='Автор публикации',
+        related_name='posts'
     )
     location = models.ForeignKey(
         'Location',
         on_delete=models.SET_NULL,
         null=True,
-        verbose_name='Местоположение'
+        verbose_name='Местоположение',
+        related_name='locations'
     )
     category = models.ForeignKey(
         'Category',
         on_delete=models.SET_NULL,
         null=True,
-        verbose_name='Категория'
+        verbose_name='Категория',
+        related_name='categories'
     )
+    objects = ActiveModelQuerySet().as_manager()
 
     class Meta:
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
+        ordering = ('-pub_date',)
 
     def __str__(self) -> str:
         return self.title
@@ -60,6 +79,7 @@ class Category(PublishedModel):
                   'разрешены символы латиницы, цифры, '
                   'дефис и подчёркивание.'
     )
+    objects = ActiveModelQuerySet().as_manager()
 
     class Meta:
         verbose_name = 'категория'
@@ -74,6 +94,7 @@ class Location(PublishedModel):
         max_length=256,
         verbose_name='Название места'
     )
+    objects = ActiveModelQuerySet().as_manager()
 
     class Meta:
         verbose_name = 'местоположение'
