@@ -44,14 +44,14 @@ class Post(PublishedModel):
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='Местоположение',
-        related_name='locations'
+        related_name='posts'
     )
     category = models.ForeignKey(
         'Category',
         on_delete=models.SET_NULL,
         null=True,
         verbose_name='Категория',
-        related_name='categories'
+        related_name='posts'
     )
     objects = ActiveModelQuerySet().as_manager()
 

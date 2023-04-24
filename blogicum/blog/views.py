@@ -29,9 +29,7 @@ def category_posts(request, category_slug):
                                 is_published=True)
     )
     post_list = get_list_or_404(
-        Post.objects.select_related(
-            'category'
-        ).published().filter(
+        category.posts.published().filter(
             category__slug=category_slug,
             pub_date__date__lte=datetime.now()
         )
