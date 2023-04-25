@@ -30,7 +30,6 @@ def category_posts(request, category_slug):
     )
     post_list = get_list_or_404(
         category.posts.published().filter(
-            category__slug=category_slug,
             pub_date__date__lte=datetime.now()
         )
     )
